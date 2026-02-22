@@ -9,7 +9,7 @@
     "test:ui": "playwright test --project=ui",
     "report": "playwright show-report",
     "type-check": "tsc --noEmit",
-    "test:coverage": "c8 --reporter=html --reporter=text playwright test"
+    "test:coverage": "c8 --all --reporter=html --reporter=text --report-dir=coverage npm run test"
   },
   "author": "Arpitha B V",
   "license": "ISC",

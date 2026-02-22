@@ -8,44 +8,47 @@ on:
 
 jobs:
   test:
+    timeout-minutes: 60
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        node-version: [18]
-
+        node-version: [24]
     steps:
       # 1. Checkout repo
       - name: Checkout repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       # 2. Setup Node
       - name: Setup Node.js
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
           node-version: ${{ matrix.node-version }}
+          cache: "npm"
 
       # 3. Install dependencies
       - name: Install dependencies
         run: npm ci
 
-      # 4. Install Playwright browsers
+      # 4. Install Playwright browsers (v1.50+ includes native dep management)
       - name: Install Playwright Browsers
         run: npx playwright install --with-deps
 
-      # 5. Run Playwright API tests with coverage
+      # 5. Run Playwright API tests
       - name: Run tests with coverage
         run: npm run test:coverage
 
-      # 6. Upload Playwright HTML report
+      # 6. Upload Playwright HTML report (v6 is the 2026 standard)
       - name: Upload Playwright report
-        uses: actions/upload-artifact@v3
+        if: always()
+        uses: actions/upload-artifact@v6
         with:
           name: playwright-report
           path: playwright-report/
+          retention-days: 30
 
       # 7. Upload coverage report
       - name: Upload coverage report
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v6
         with:
-          name: coverage
+          name: coverage-report
           path: coverage/

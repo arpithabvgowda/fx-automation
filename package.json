@@ -1,0 +1,26 @@
+{
+  "name": "fx-automation",
+  "version": "1.0.0",
+  "description": "A scalable Node.js API automation framework built with Playwright and TypeScript, focused on contract validation, backend reliability, and CI integration.",
+  "scripts": {
+    "test": "playwright test",
+    "test:api": "playwright test --project=api",
+    "test:ui": "playwright test --project=ui",
+    "report": "playwright show-report",
+    "type-check": "tsc --noEmit",
+    "script": "tsx scripts/example.ts"
+  },
+  "author": "Arpitha B V",
+  "license": "ISC",
+  "devDependencies": {
+    "@playwright/test": "^1.58.2",
+    "@types/node": "^25.3.0",
+    "ajv": "^8.18.0",
+    "ajv-formats": "^3.0.1",
+    "tsx": "^4.21.0",
+    "typescript": "^5.9.3"
+  },
+  "dependencies": {
+    "dotenv": "^17.3.1"
+  }
+}

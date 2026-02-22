@@ -1,0 +1,2808 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "Exchange Rates API",
+    "version": "1.0.0",
+    "summary": "Real-time, historical, time-series, fluctuation exchange rate data and conversion.",
+    "description": "With over 15 exchange rate data sources, the Exchangerates API is delivering exchanging rates data for more than 170 world currencies. This API has several endpoints, where each of them serves a different purpose, use case. The endpoints include functionalities like receiving the latest exchange rates information for a specific set, or for all currencies; conversion from one to another currency; receiving data Time-series for multiple or for one currency, and preserving the API daily for the fluctuation data.\n"
+  },
+  "servers": [
+    {
+      "url": "https://api.exchangeratesapi.io/v1",
+      "description": "Primary API server"
+    }
+  ],
+  "security": [{ "AccessKeyQuery": [] }],
+  "paths": {
+    "/symbols": {
+      "get": {
+        "operationId": "getSupportedSymbols",
+        "summary": "Supported Symbols",
+        "description": "The API comes with an updated endpoint that returns all of the available currencies. To receive the list, make an API request to the Supported Symbols endpoint.\n",
+        "parameters": [
+          {
+            "name": "access_key",
+            "in": "query",
+            "required": true,
+            "description": "Your API access key.",
+            "schema": { "type": "string", "minLength": 1 },
+            "example": "YOUR_ACCESS_KEY"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of supported currency symbols.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "description": "Supported currency symbols.",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "description": "Indicates whether the request was successful."
+                    },
+                    "symbols": {
+                      "type": "object",
+                      "description": "Map of currency codes to human-readable names.",
+                      "additionalProperties": { "type": "string" }
+                    }
+                  },
+                  "required": ["success", "symbols"]
+                },
+                "examples": {
+                  "default": {
+                    "value": {
+                      "success": true,
+                      "symbols": {
+                        "USD": "United States Dollar",
+                        "EUR": "Euro",
+                        "GBP": "British Pound Sterling",
+                        "JPY": "Japanese Yen",
+                        "XAU": "Gold (troy ounce)"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "description": "Standard error payload for failed requests.",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "description": "Always `false` for error responses.",
+                      "example": false
+                    },
+                    "error": {
+                      "type": "object",
+                      "description": "Error details.",
+                      "properties": {
+                        "code": {
+                          "type": "integer",
+                          "description": "Numeric error code (e.g., 101 invalid_access_key, 104 usage_limit_reached).",
+                          "example": 101
+                        },
+                        "type": {
+                          "type": "string",
+                          "description": "Machine-readable error type identifier.",
+                          "example": "invalid_access_key"
+                        },
+                        "info": {
+                          "type": "string",
+                          "description": "Human-readable description of the error and suggested action.",
+                          "example": "You have not supplied a valid API Access Key."
+                        }
+                      },
+                      "required": ["code"]
+                    }
+                  },
+                  "required": ["success", "error"]
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized — missing or invalid API key.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "description": "Standard error payload for failed requests.",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "description": "Always `false` for error responses.",
+                      "example": false
+                    },
+                    "error": {
+                      "type": "object",
+                      "description": "Error details.",
+                      "properties": {
+                        "code": {
+                          "type": "integer",
+                          "description": "Numeric error code (e.g., 101 invalid_access_key, 104 usage_limit_reached).",
+                          "example": 101
+                        },
+                        "type": {
+                          "type": "string",
+                          "description": "Machine-readable error type identifier.",
+                          "example": "invalid_access_key"
+                        },
+                        "info": {
+                          "type": "string",
+                          "description": "Human-readable description of the error and suggested action.",
+                          "example": "You have not supplied a valid API Access Key."
+                        }
+                      },
+                      "required": ["code"]
+                    }
+                  },
+                  "required": ["success", "error"]
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden — feature or base currency not allowed for current plan.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "description": "Standard error payload for failed requests.",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "description": "Always `false` for error responses.",
+                      "example": false
+                    },
+                    "error": {
+                      "type": "object",
+                      "description": "Error details.",
+                      "properties": {
+                        "code": {
+                          "type": "integer",
+                          "description": "Numeric error code (e.g., 101 invalid_access_key, 104 usage_limit_reached).",
+                          "example": 101
+                        },
+                        "type": {
+                          "type": "string",
+                          "description": "Machine-readable error type identifier.",
+                          "example": "invalid_access_key"
+                        },
+                        "info": {
+                          "type": "string",
+                          "description": "Human-readable description of the error and suggested action.",
+                          "example": "You have not supplied a valid API Access Key."
+                        }
+                      },
+                      "required": ["code"]
+                    }
+                  },
+                  "required": ["success", "error"]
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Too many requests — usage limit reached.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "description": "Standard error payload for failed requests.",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "description": "Always `false` for error responses.",
+                      "example": false
+                    },
+                    "error": {
+                      "type": "object",
+                      "description": "Error details.",
+                      "properties": {
+                        "code": {
+                          "type": "integer",
+                          "description": "Numeric error code (e.g., 101 invalid_access_key, 104 usage_limit_reached).",
+                          "example": 101
+                        },
+                        "type": {
+                          "type": "string",
+                          "description": "Machine-readable error type identifier.",
+                          "example": "invalid_access_key"
+                        },
+                        "info": {
+                          "type": "string",
+                          "description": "Human-readable description of the error and suggested action.",
+                          "example": "You have not supplied a valid API Access Key."
+                        }
+                      },
+                      "required": ["code"]
+                    }
+                  },
+                  "required": ["success", "error"]
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Server error.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "description": "Standard error payload for failed requests.",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "description": "Always `false` for error responses.",
+                      "example": false
+                    },
+                    "error": {
+                      "type": "object",
+                      "description": "Error details.",
+                      "properties": {
+                        "code": {
+                          "type": "integer",
+                          "description": "Numeric error code (e.g., 101 invalid_access_key, 104 usage_limit_reached).",
+                          "example": 101
+                        },
+                        "type": {
+                          "type": "string",
+                          "description": "Machine-readable error type identifier.",
+                          "example": "invalid_access_key"
+                        },
+                        "info": {
+                          "type": "string",
+                          "description": "Human-readable description of the error and suggested action.",
+                          "example": "You have not supplied a valid API Access Key."
+                        }
+                      },
+                      "required": ["code"]
+                    }
+                  },
+                  "required": ["success", "error"]
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/latest": {
+      "get": {
+        "operationId": "getLatestRates",
+        "summary": "Latest Rates",
+        "description": "This endpoint, depending on your subscription plan will return real-time exchange rate data which gets updated every 60 minutes, every 10 minutes, or every 60 seconds.\n",
+        "parameters": [
+          {
+            "name": "access_key",
+            "in": "query",
+            "required": true,
+            "description": "Your API access key.",
+            "schema": { "type": "string", "minLength": 1 },
+            "example": "YOUR_ACCESS_KEY"
+          },
+          {
+            "name": "base",
+            "in": "query",
+            "required": false,
+            "description": "Base currency (ISO 4217, e.g., `USD`). If omitted, the provider's default base (often `EUR`) is used. Changing base may be restricted on lower-tier plans.\n",
+            "schema": {
+              "type": "string",
+              "description": "ISO 4217 currency code (or metal code such as XAU/XAG).",
+              "pattern": "^[A-Z]{3}$",
+              "example": "USD"
+            },
+            "example": "USD"
+          },
+          {
+            "name": "symbols",
+            "in": "query",
+            "required": false,
+            "description": "Comma-separated list of target currency codes to filter the response (e.g., `USD,GBP,JPY`).\n",
+            "schema": { "type": "string", "pattern": "^[A-Za-z,]+$" },
+            "example": "USD,GBP,JPY"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Latest exchange rates snapshot.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "description": "Latest rates snapshot.",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "description": "Whether the request was successful."
+                    },
+                    "timestamp": {
+                      "type": "integer",
+                      "description": "UNIX time (seconds) for the rates snapshot."
+                    },
+                    "base": {
+                      "type": "string",
+                      "description": "ISO 4217 currency code (or metal code such as XAU/XAG).",
+                      "pattern": "^[A-Z]{3}$",
+                      "example": "USD"
+                    },
+                    "date": {
+                      "type": "string",
+                      "format": "date",
+                      "description": "ISO date of the rates snapshot."
+                    },
+                    "rates": {
+                      "type": "object",
+                      "description": "Map of currency codes to their rate relative to `base`.",
+                      "additionalProperties": { "type": "number" }
+                    }
+                  },
+                  "required": ["success", "timestamp", "base", "date", "rates"]
+                },
+                "examples": {
+                  "default": {
+                    "value": {
+                      "success": true,
+                      "timestamp": 1719408000,
+                      "base": "EUR",
+                      "date": "2024-06-26",
+                      "rates": { "USD": 1.0712, "GBP": 0.8473, "JPY": 171.55 }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "description": "Standard error payload for failed requests.",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "description": "Always `false` for error responses.",
+                      "example": false
+                    },
+                    "error": {
+                      "type": "object",
+                      "description": "Error details.",
+                      "properties": {
+                        "code": {
+                          "type": "integer",
+                          "description": "Numeric error code (e.g., 101 invalid_access_key, 104 usage_limit_reached).",
+                          "example": 101
+                        },
+                        "type": {
+                          "type": "string",
+                          "description": "Machine-readable error type identifier.",
+                          "example": "invalid_access_key"
+                        },
+                        "info": {
+                          "type": "string",
+                          "description": "Human-readable description of the error and suggested action.",
+                          "example": "You have not supplied a valid API Access Key."
+                        }
+                      },
+                      "required": ["code"]
+                    }
+                  },
+                  "required": ["success", "error"]
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized — missing or invalid API key.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "description": "Standard error payload for failed requests.",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "description": "Always `false` for error responses.",
+                      "example": false
+                    },
+                    "error": {
+                      "type": "object",
+                      "description": "Error details.",
+                      "properties": {
+                        "code": {
+                          "type": "integer",
+                          "description": "Numeric error code (e.g., 101 invalid_access_key, 104 usage_limit_reached).",
+                          "example": 101
+                        },
+                        "type": {
+                          "type": "string",
+                          "description": "Machine-readable error type identifier.",
+                          "example": "invalid_access_key"
+                        },
+                        "info": {
+                          "type": "string",
+                          "description": "Human-readable description of the error and suggested action.",
+                          "example": "You have not supplied a valid API Access Key."
+                        }
+                      },
+                      "required": ["code"]
+                    }
+                  },
+                  "required": ["success", "error"]
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden — feature or base currency not allowed for current plan.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "description": "Standard error payload for failed requests.",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "description": "Always `false` for error responses.",
+                      "example": false
+                    },
+                    "error": {
+                      "type": "object",
+                      "description": "Error details.",
+                      "properties": {
+                        "code": {
+                          "type": "integer",
+                          "description": "Numeric error code (e.g., 101 invalid_access_key, 104 usage_limit_reached).",
+                          "example": 101
+                        },
+                        "type": {
+                          "type": "string",
+                          "description": "Machine-readable error type identifier.",
+                          "example": "invalid_access_key"
+                        },
+                        "info": {
+                          "type": "string",
+                          "description": "Human-readable description of the error and suggested action.",
+                          "example": "You have not supplied a valid API Access Key."
+                        }
+                      },
+                      "required": ["code"]
+                    }
+                  },
+                  "required": ["success", "error"]
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "description": "Standard error payload for failed requests.",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "description": "Always `false` for error responses.",
+                      "example": false
+                    },
+                    "error": {
+                      "type": "object",
+                      "description": "Error details.",
+                      "properties": {
+                        "code": {
+                          "type": "integer",
+                          "description": "Numeric error code (e.g., 101 invalid_access_key, 104 usage_limit_reached).",
+                          "example": 101
+                        },
+                        "type": {
+                          "type": "string",
+                          "description": "Machine-readable error type identifier.",
+                          "example": "invalid_access_key"
+                        },
+                        "info": {
+                          "type": "string",
+                          "description": "Human-readable description of the error and suggested action.",
+                          "example": "You have not supplied a valid API Access Key."
+                        }
+                      },
+                      "required": ["code"]
+                    }
+                  },
+                  "required": ["success", "error"]
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Too many requests — usage limit reached.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "description": "Standard error payload for failed requests.",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "description": "Always `false` for error responses.",
+                      "example": false
+                    },
+                    "error": {
+                      "type": "object",
+                      "description": "Error details.",
+                      "properties": {
+                        "code": {
+                          "type": "integer",
+                          "description": "Numeric error code (e.g., 101 invalid_access_key, 104 usage_limit_reached).",
+                          "example": 101
+                        },
+                        "type": {
+                          "type": "string",
+                          "description": "Machine-readable error type identifier.",
+                          "example": "invalid_access_key"
+                        },
+                        "info": {
+                          "type": "string",
+                          "description": "Human-readable description of the error and suggested action.",
+                          "example": "You have not supplied a valid API Access Key."
+                        }
+                      },
+                      "required": ["code"]
+                    }
+                  },
+                  "required": ["success", "error"]
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Server error.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "description": "Standard error payload for failed requests.",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "description": "Always `false` for error responses.",
+                      "example": false
+                    },
+                    "error": {
+                      "type": "object",
+                      "description": "Error details.",
+                      "properties": {
+                        "code": {
+                          "type": "integer",
+                          "description": "Numeric error code (e.g., 101 invalid_access_key, 104 usage_limit_reached).",
+                          "example": 101
+                        },
+                        "type": {
+                          "type": "string",
+                          "description": "Machine-readable error type identifier.",
+                          "example": "invalid_access_key"
+                        },
+                        "info": {
+                          "type": "string",
+                          "description": "Human-readable description of the error and suggested action.",
+                          "example": "You have not supplied a valid API Access Key."
+                        }
+                      },
+                      "required": ["code"]
+                    }
+                  },
+                  "required": ["success", "error"]
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/{date}": {
+      "get": {
+        "operationId": "getHistoricalRates",
+        "summary": "Historical Rates",
+        "description": "With this endpoint we have the possibility to see historical rates of the currencies back to 1999, most of the currencies data are available until 1999. You can query the Exchangerates API for historical rates by appending a date (`YYYY-MM-DD`) to the base URL.\n",
+        "parameters": [
+          {
+            "name": "date",
+            "in": "path",
+            "required": true,
+            "description": "Historical date in `YYYY-MM-DD` format.",
+            "schema": { "type": "string", "format": "date" },
+            "example": "2023-11-15"
+          },
+          {
+            "name": "access_key",
+            "in": "query",
+            "required": true,
+            "description": "Your API access key.",
+            "schema": { "type": "string", "minLength": 1 },
+            "example": "YOUR_ACCESS_KEY"
+          },
+          {
+            "name": "base",
+            "in": "query",
+            "required": false,
+            "description": "Base currency (ISO 4217, e.g., `USD`). If omitted, the provider's default base (often `EUR`) is used. Changing base may be restricted on lower-tier plans.\n",
+            "schema": {
+              "type": "string",
+              "description": "ISO 4217 currency code (or metal code such as XAU/XAG).",
+              "pattern": "^[A-Z]{3}$",
+              "example": "USD"
+            },
+            "example": "USD"
+          },
+          {
+            "name": "symbols",
+            "in": "query",
+            "required": false,
+            "description": "Comma-separated list of target currency codes to filter the response (e.g., `USD,GBP,JPY`).\n",
+            "schema": { "type": "string", "pattern": "^[A-Za-z,]+$" },
+            "example": "USD,GBP,JPY"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Historical rates for the specified date.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "description": "Historical rates snapshot for a specific date.",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "description": "Whether the request was successful."
+                    },
+                    "historical": {
+                      "type": "boolean",
+                      "description": "Will be `true` for historical requests."
+                    },
+                    "date": {
+                      "type": "string",
+                      "format": "date",
+                      "description": "Requested historical date."
+                    },
+                    "timestamp": {
+                      "type": "integer",
+                      "description": "UNIX time (seconds) for the rates snapshot."
+                    },
+                    "base": {
+                      "type": "string",
+                      "description": "ISO 4217 currency code (or metal code such as XAU/XAG).",
+                      "pattern": "^[A-Z]{3}$",
+                      "example": "USD"
+                    },
+                    "rates": {
+                      "type": "object",
+                      "description": "Map of currency codes to their rate relative to `base`.",
+                      "additionalProperties": { "type": "number" }
+                    }
+                  },
+                  "required": [
+                    "success",
+                    "historical",
+                    "date",
+                    "timestamp",
+                    "base",
+                    "rates"
+                  ]
+                },
+                "examples": {
+                  "default": {
+                    "value": {
+                      "success": true,
+                      "historical": true,
+                      "date": "2023-11-15",
+                      "timestamp": 1700006400,
+                      "base": "EUR",
+                      "rates": { "USD": 1.0849, "CHF": 0.9671 }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "description": "Standard error payload for failed requests.",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "description": "Always `false` for error responses.",
+                      "example": false
+                    },
+                    "error": {
+                      "type": "object",
+                      "description": "Error details.",
+                      "properties": {
+                        "code": {
+                          "type": "integer",
+                          "description": "Numeric error code (e.g., 101 invalid_access_key, 104 usage_limit_reached).",
+                          "example": 101
+                        },
+                        "type": {
+                          "type": "string",
+                          "description": "Machine-readable error type identifier.",
+                          "example": "invalid_access_key"
+                        },
+                        "info": {
+                          "type": "string",
+                          "description": "Human-readable description of the error and suggested action.",
+                          "example": "You have not supplied a valid API Access Key."
+                        }
+                      },
+                      "required": ["code"]
+                    }
+                  },
+                  "required": ["success", "error"]
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized — missing or invalid API key.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "description": "Standard error payload for failed requests.",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "description": "Always `false` for error responses.",
+                      "example": false
+                    },
+                    "error": {
+                      "type": "object",
+                      "description": "Error details.",
+                      "properties": {
+                        "code": {
+                          "type": "integer",
+                          "description": "Numeric error code (e.g., 101 invalid_access_key, 104 usage_limit_reached).",
+                          "example": 101
+                        },
+                        "type": {
+                          "type": "string",
+                          "description": "Machine-readable error type identifier.",
+                          "example": "invalid_access_key"
+                        },
+                        "info": {
+                          "type": "string",
+                          "description": "Human-readable description of the error and suggested action.",
+                          "example": "You have not supplied a valid API Access Key."
+                        }
+                      },
+                      "required": ["code"]
+                    }
+                  },
+                  "required": ["success", "error"]
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden — feature or base currency not allowed for current plan.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "description": "Standard error payload for failed requests.",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "description": "Always `false` for error responses.",
+                      "example": false
+                    },
+                    "error": {
+                      "type": "object",
+                      "description": "Error details.",
+                      "properties": {
+                        "code": {
+                          "type": "integer",
+                          "description": "Numeric error code (e.g., 101 invalid_access_key, 104 usage_limit_reached).",
+                          "example": 101
+                        },
+                        "type": {
+                          "type": "string",
+                          "description": "Machine-readable error type identifier.",
+                          "example": "invalid_access_key"
+                        },
+                        "info": {
+                          "type": "string",
+                          "description": "Human-readable description of the error and suggested action.",
+                          "example": "You have not supplied a valid API Access Key."
+                        }
+                      },
+                      "required": ["code"]
+                    }
+                  },
+                  "required": ["success", "error"]
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "description": "Standard error payload for failed requests.",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "description": "Always `false` for error responses.",
+                      "example": false
+                    },
+                    "error": {
+                      "type": "object",
+                      "description": "Error details.",
+                      "properties": {
+                        "code": {
+                          "type": "integer",
+                          "description": "Numeric error code (e.g., 101 invalid_access_key, 104 usage_limit_reached).",
+                          "example": 101
+                        },
+                        "type": {
+                          "type": "string",
+                          "description": "Machine-readable error type identifier.",
+                          "example": "invalid_access_key"
+                        },
+                        "info": {
+                          "type": "string",
+                          "description": "Human-readable description of the error and suggested action.",
+                          "example": "You have not supplied a valid API Access Key."
+                        }
+                      },
+                      "required": ["code"]
+                    }
+                  },
+                  "required": ["success", "error"]
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Too many requests — usage limit reached.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "description": "Standard error payload for failed requests.",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "description": "Always `false` for error responses.",
+                      "example": false
+                    },
+                    "error": {
+                      "type": "object",
+                      "description": "Error details.",
+                      "properties": {
+                        "code": {
+                          "type": "integer",
+                          "description": "Numeric error code (e.g., 101 invalid_access_key, 104 usage_limit_reached).",
+                          "example": 101
+                        },
+                        "type": {
+                          "type": "string",
+                          "description": "Machine-readable error type identifier.",
+                          "example": "invalid_access_key"
+                        },
+                        "info": {
+                          "type": "string",
+                          "description": "Human-readable description of the error and suggested action.",
+                          "example": "You have not supplied a valid API Access Key."
+                        }
+                      },
+                      "required": ["code"]
+                    }
+                  },
+                  "required": ["success", "error"]
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Server error.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "description": "Standard error payload for failed requests.",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "description": "Always `false` for error responses.",
+                      "example": false
+                    },
+                    "error": {
+                      "type": "object",
+                      "description": "Error details.",
+                      "properties": {
+                        "code": {
+                          "type": "integer",
+                          "description": "Numeric error code (e.g., 101 invalid_access_key, 104 usage_limit_reached).",
+                          "example": 101
+                        },
+                        "type": {
+                          "type": "string",
+                          "description": "Machine-readable error type identifier.",
+                          "example": "invalid_access_key"
+                        },
+                        "info": {
+                          "type": "string",
+                          "description": "Human-readable description of the error and suggested action.",
+                          "example": "You have not supplied a valid API Access Key."
+                        }
+                      },
+                      "required": ["code"]
+                    }
+                  },
+                  "required": ["success", "error"]
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/convert": {
+      "get": {
+        "operationId": "convertCurrency",
+        "summary": "Convert",
+        "description": "This is a separate endpoint for currency conversion that comes with the Exchangerates API and can be used to convert an amount from one currency to another. Please use this API endpoint for the conversion of any currency.\n                           \nIt is also possible to convert currencies using historical exchange rate data. To do this, please also use the API's `date` parameter and set it to your preferred date. (`YYYY-MM-DD`).\n",
+        "parameters": [
+          {
+            "name": "access_key",
+            "in": "query",
+            "required": true,
+            "description": "Your API access key.",
+            "schema": { "type": "string", "minLength": 1 },
+            "example": "YOUR_ACCESS_KEY"
+          },
+          {
+            "name": "from",
+            "in": "query",
+            "required": true,
+            "description": "Three-letter source currency code (ISO 4217).",
+            "schema": {
+              "type": "string",
+              "description": "ISO 4217 currency code (or metal code such as XAU/XAG).",
+              "pattern": "^[A-Z]{3}$",
+              "example": "USD"
+            },
+            "example": "USD"
+          },
+          {
+            "name": "to",
+            "in": "query",
+            "required": true,
+            "description": "Three-letter target currency code (ISO 4217).",
+            "schema": {
+              "type": "string",
+              "description": "ISO 4217 currency code (or metal code such as XAU/XAG).",
+              "pattern": "^[A-Z]{3}$",
+              "example": "USD"
+            },
+            "example": "JPY"
+          },
+          {
+            "name": "amount",
+            "in": "query",
+            "required": true,
+            "description": "Amount to convert (positive decimal).",
+            "schema": { "type": "number", "exclusiveMinimum": 0 },
+            "example": 125
+          },
+          {
+            "name": "date",
+            "in": "query",
+            "required": false,
+            "description": "When provided on **/convert**, performs conversion using the specified historical date (`YYYY-MM-DD`).\n",
+            "schema": { "type": "string", "format": "date" },
+            "example": "2023-10-15"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Conversion result for the specified currencies and amount.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "description": "Currency conversion result and metadata.",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "description": "Whether the request was successful."
+                    },
+                    "query": {
+                      "type": "object",
+                      "description": "Original conversion query.",
+                      "properties": {
+                        "from": {
+                          "type": "string",
+                          "description": "ISO 4217 currency code (or metal code such as XAU/XAG).",
+                          "pattern": "^[A-Z]{3}$",
+                          "example": "USD"
+                        },
+                        "to": {
+                          "type": "string",
+                          "description": "ISO 4217 currency code (or metal code such as XAU/XAG).",
+                          "pattern": "^[A-Z]{3}$",
+                          "example": "USD"
+                        },
+                        "amount": {
+                          "type": "number",
+                          "description": "Amount requested to convert."
+                        }
+                      },
+                      "required": ["from", "to", "amount"]
+                    },
+                    "info": {
+                      "type": "object",
+                      "description": "Rate information used for conversion.",
+                      "properties": {
+                        "timestamp": {
+                          "type": "integer",
+                          "description": "UNIX time (seconds) when the rate was last updated."
+                        },
+                        "rate": {
+                          "type": "number",
+                          "description": "Conversion rate from `from` to `to` at the time of conversion."
+                        }
+                      },
+                      "required": ["timestamp", "rate"]
+                    },
+                    "historical": {
+                      "type": "boolean",
+                      "description": "Indicates if a historical date was used for conversion."
+                    },
+                    "date": {
+                      "type": "string",
+                      "format": "date",
+                      "description": "Date associated with the applied rate (latest or historical)."
+                    },
+                    "result": {
+                      "type": "number",
+                      "description": "Calculated converted amount."
+                    }
+                  },
+                  "required": [
+                    "success",
+                    "query",
+                    "info",
+                    "historical",
+                    "date",
+                    "result"
+                  ]
+                },
+                "examples": {
+                  "latest": {
+                    "summary": "Latest conversion",
+                    "value": {
+                      "success": true,
+                      "query": { "from": "USD", "to": "JPY", "amount": 125 },
+                      "info": { "timestamp": 1719408000, "rate": 159.83 },
+                      "historical": false,
+                      "date": "2024-06-26",
+                      "result": 19978.75
+                    }
+                  },
+                  "historical": {
+                    "summary": "Historical conversion",
+                    "value": {
+                      "success": true,
+                      "query": { "from": "GBP", "to": "EUR", "amount": 100 },
+                      "info": { "timestamp": 1697414400, "rate": 1.1552 },
+                      "historical": true,
+                      "date": "2023-10-15",
+                      "result": 115.52
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "description": "Standard error payload for failed requests.",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "description": "Always `false` for error responses.",
+                      "example": false
+                    },
+                    "error": {
+                      "type": "object",
+                      "description": "Error details.",
+                      "properties": {
+                        "code": {
+                          "type": "integer",
+                          "description": "Numeric error code (e.g., 101 invalid_access_key, 104 usage_limit_reached).",
+                          "example": 101
+                        },
+                        "type": {
+                          "type": "string",
+                          "description": "Machine-readable error type identifier.",
+                          "example": "invalid_access_key"
+                        },
+                        "info": {
+                          "type": "string",
+                          "description": "Human-readable description of the error and suggested action.",
+                          "example": "You have not supplied a valid API Access Key."
+                        }
+                      },
+                      "required": ["code"]
+                    }
+                  },
+                  "required": ["success", "error"]
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized — missing or invalid API key.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "description": "Standard error payload for failed requests.",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "description": "Always `false` for error responses.",
+                      "example": false
+                    },
+                    "error": {
+                      "type": "object",
+                      "description": "Error details.",
+                      "properties": {
+                        "code": {
+                          "type": "integer",
+                          "description": "Numeric error code (e.g., 101 invalid_access_key, 104 usage_limit_reached).",
+                          "example": 101
+                        },
+                        "type": {
+                          "type": "string",
+                          "description": "Machine-readable error type identifier.",
+                          "example": "invalid_access_key"
+                        },
+                        "info": {
+                          "type": "string",
+                          "description": "Human-readable description of the error and suggested action.",
+                          "example": "You have not supplied a valid API Access Key."
+                        }
+                      },
+                      "required": ["code"]
+                    }
+                  },
+                  "required": ["success", "error"]
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden — feature or base currency not allowed for current plan.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "description": "Standard error payload for failed requests.",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "description": "Always `false` for error responses.",
+                      "example": false
+                    },
+                    "error": {
+                      "type": "object",
+                      "description": "Error details.",
+                      "properties": {
+                        "code": {
+                          "type": "integer",
+                          "description": "Numeric error code (e.g., 101 invalid_access_key, 104 usage_limit_reached).",
+                          "example": 101
+                        },
+                        "type": {
+                          "type": "string",
+                          "description": "Machine-readable error type identifier.",
+                          "example": "invalid_access_key"
+                        },
+                        "info": {
+                          "type": "string",
+                          "description": "Human-readable description of the error and suggested action.",
+                          "example": "You have not supplied a valid API Access Key."
+                        }
+                      },
+                      "required": ["code"]
+                    }
+                  },
+                  "required": ["success", "error"]
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "description": "Standard error payload for failed requests.",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "description": "Always `false` for error responses.",
+                      "example": false
+                    },
+                    "error": {
+                      "type": "object",
+                      "description": "Error details.",
+                      "properties": {
+                        "code": {
+                          "type": "integer",
+                          "description": "Numeric error code (e.g., 101 invalid_access_key, 104 usage_limit_reached).",
+                          "example": 101
+                        },
+                        "type": {
+                          "type": "string",
+                          "description": "Machine-readable error type identifier.",
+                          "example": "invalid_access_key"
+                        },
+                        "info": {
+                          "type": "string",
+                          "description": "Human-readable description of the error and suggested action.",
+                          "example": "You have not supplied a valid API Access Key."
+                        }
+                      },
+                      "required": ["code"]
+                    }
+                  },
+                  "required": ["success", "error"]
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Too many requests — usage limit reached.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "description": "Standard error payload for failed requests.",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "description": "Always `false` for error responses.",
+                      "example": false
+                    },
+                    "error": {
+                      "type": "object",
+                      "description": "Error details.",
+                      "properties": {
+                        "code": {
+                          "type": "integer",
+                          "description": "Numeric error code (e.g., 101 invalid_access_key, 104 usage_limit_reached).",
+                          "example": 101
+                        },
+                        "type": {
+                          "type": "string",
+                          "description": "Machine-readable error type identifier.",
+                          "example": "invalid_access_key"
+                        },
+                        "info": {
+                          "type": "string",
+                          "description": "Human-readable description of the error and suggested action.",
+                          "example": "You have not supplied a valid API Access Key."
+                        }
+                      },
+                      "required": ["code"]
+                    }
+                  },
+                  "required": ["success", "error"]
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Server error.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "description": "Standard error payload for failed requests.",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "description": "Always `false` for error responses.",
+                      "example": false
+                    },
+                    "error": {
+                      "type": "object",
+                      "description": "Error details.",
+                      "properties": {
+                        "code": {
+                          "type": "integer",
+                          "description": "Numeric error code (e.g., 101 invalid_access_key, 104 usage_limit_reached).",
+                          "example": 101
+                        },
+                        "type": {
+                          "type": "string",
+                          "description": "Machine-readable error type identifier.",
+                          "example": "invalid_access_key"
+                        },
+                        "info": {
+                          "type": "string",
+                          "description": "Human-readable description of the error and suggested action.",
+                          "example": "You have not supplied a valid API Access Key."
+                        }
+                      },
+                      "required": ["code"]
+                    }
+                  },
+                  "required": ["success", "error"]
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/timeseries": {
+      "get": {
+        "operationId": "getTimeSeries",
+        "summary": "Time-Series",
+        "description": "If supported by your subscription plan, the Exchangerates API's Time-Series endpoint lets you query the API for daily historical rates between two dates of your choice, with a maximum time frame of 365 days.\n",
+        "parameters": [
+          {
+            "name": "access_key",
+            "in": "query",
+            "required": true,
+            "description": "Your API access key.",
+            "schema": { "type": "string", "minLength": 1 },
+            "example": "YOUR_ACCESS_KEY"
+          },
+          {
+            "name": "start_date",
+            "in": "query",
+            "required": true,
+            "description": "Start date (inclusive) in `YYYY-MM-DD`.",
+            "schema": { "type": "string", "format": "date" },
+            "example": "2024-05-01"
+          },
+          {
+            "name": "end_date",
+            "in": "query",
+            "required": true,
+            "description": "End date (inclusive) in `YYYY-MM-DD`.",
+            "schema": { "type": "string", "format": "date" },
+            "example": "2024-05-07"
+          },
+          {
+            "name": "base",
+            "in": "query",
+            "required": false,
+            "description": "Base currency (ISO 4217, e.g., `USD`). If omitted, the provider's default base (often `EUR`) is used. Changing base may be restricted on lower-tier plans.\n",
+            "schema": {
+              "type": "string",
+              "description": "ISO 4217 currency code (or metal code such as XAU/XAG).",
+              "pattern": "^[A-Z]{3}$",
+              "example": "USD"
+            },
+            "example": "USD"
+          },
+          {
+            "name": "symbols",
+            "in": "query",
+            "required": false,
+            "description": "Comma-separated list of target currency codes to filter the response (e.g., `USD,GBP,JPY`).\n",
+            "schema": { "type": "string", "pattern": "^[A-Za-z,]+$" },
+            "example": "USD,GBP,JPY"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Time-series exchange rate data for the requested period.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "description": "Daily exchange rates over a time window.",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "description": "Whether the request was successful."
+                    },
+                    "timeseries": {
+                      "type": "boolean",
+                      "description": "Will be `true` for time-series requests."
+                    },
+                    "start_date": {
+                      "type": "string",
+                      "format": "date",
+                      "description": "Start date of the time window."
+                    },
+                    "end_date": {
+                      "type": "string",
+                      "format": "date",
+                      "description": "End date of the time window."
+                    },
+                    "base": {
+                      "type": "string",
+                      "description": "ISO 4217 currency code (or metal code such as XAU/XAG).",
+                      "pattern": "^[A-Z]{3}$",
+                      "example": "USD"
+                    },
+                    "rates": {
+                      "type": "object",
+                      "description": "Map keyed by `YYYY-MM-DD`, each containing a currency-to-rate map relative to `base`.\n",
+                      "additionalProperties": {
+                        "type": "object",
+                        "additionalProperties": { "type": "number" }
+                      }
+                    }
+                  },
+                  "required": [
+                    "success",
+                    "timeseries",
+                    "start_date",
+                    "end_date",
+                    "base",
+                    "rates"
+                  ]
+                },
+                "examples": {
+                  "default": {
+                    "value": {
+                      "success": true,
+                      "timeseries": true,
+                      "start_date": "2024-05-01",
+                      "end_date": "2024-05-03",
+                      "base": "EUR",
+                      "rates": {
+                        "2024-05-01": { "USD": 1.0711, "GBP": 0.857 },
+                        "2024-05-02": { "USD": 1.0734, "GBP": 0.8559 },
+                        "2024-05-03": { "USD": 1.0749, "GBP": 0.8543 }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "description": "Standard error payload for failed requests.",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "description": "Always `false` for error responses.",
+                      "example": false
+                    },
+                    "error": {
+                      "type": "object",
+                      "description": "Error details.",
+                      "properties": {
+                        "code": {
+                          "type": "integer",
+                          "description": "Numeric error code (e.g., 101 invalid_access_key, 104 usage_limit_reached).",
+                          "example": 101
+                        },
+                        "type": {
+                          "type": "string",
+                          "description": "Machine-readable error type identifier.",
+                          "example": "invalid_access_key"
+                        },
+                        "info": {
+                          "type": "string",
+                          "description": "Human-readable description of the error and suggested action.",
+                          "example": "You have not supplied a valid API Access Key."
+                        }
+                      },
+                      "required": ["code"]
+                    }
+                  },
+                  "required": ["success", "error"]
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized — missing or invalid API key.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "description": "Standard error payload for failed requests.",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "description": "Always `false` for error responses.",
+                      "example": false
+                    },
+                    "error": {
+                      "type": "object",
+                      "description": "Error details.",
+                      "properties": {
+                        "code": {
+                          "type": "integer",
+                          "description": "Numeric error code (e.g., 101 invalid_access_key, 104 usage_limit_reached).",
+                          "example": 101
+                        },
+                        "type": {
+                          "type": "string",
+                          "description": "Machine-readable error type identifier.",
+                          "example": "invalid_access_key"
+                        },
+                        "info": {
+                          "type": "string",
+                          "description": "Human-readable description of the error and suggested action.",
+                          "example": "You have not supplied a valid API Access Key."
+                        }
+                      },
+                      "required": ["code"]
+                    }
+                  },
+                  "required": ["success", "error"]
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden — feature or base currency not allowed for current plan.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "description": "Standard error payload for failed requests.",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "description": "Always `false` for error responses.",
+                      "example": false
+                    },
+                    "error": {
+                      "type": "object",
+                      "description": "Error details.",
+                      "properties": {
+                        "code": {
+                          "type": "integer",
+                          "description": "Numeric error code (e.g., 101 invalid_access_key, 104 usage_limit_reached).",
+                          "example": 101
+                        },
+                        "type": {
+                          "type": "string",
+                          "description": "Machine-readable error type identifier.",
+                          "example": "invalid_access_key"
+                        },
+                        "info": {
+                          "type": "string",
+                          "description": "Human-readable description of the error and suggested action.",
+                          "example": "You have not supplied a valid API Access Key."
+                        }
+                      },
+                      "required": ["code"]
+                    }
+                  },
+                  "required": ["success", "error"]
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "description": "Standard error payload for failed requests.",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "description": "Always `false` for error responses.",
+                      "example": false
+                    },
+                    "error": {
+                      "type": "object",
+                      "description": "Error details.",
+                      "properties": {
+                        "code": {
+                          "type": "integer",
+                          "description": "Numeric error code (e.g., 101 invalid_access_key, 104 usage_limit_reached).",
+                          "example": 101
+                        },
+                        "type": {
+                          "type": "string",
+                          "description": "Machine-readable error type identifier.",
+                          "example": "invalid_access_key"
+                        },
+                        "info": {
+                          "type": "string",
+                          "description": "Human-readable description of the error and suggested action.",
+                          "example": "You have not supplied a valid API Access Key."
+                        }
+                      },
+                      "required": ["code"]
+                    }
+                  },
+                  "required": ["success", "error"]
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Too many requests — usage limit reached.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "description": "Standard error payload for failed requests.",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "description": "Always `false` for error responses.",
+                      "example": false
+                    },
+                    "error": {
+                      "type": "object",
+                      "description": "Error details.",
+                      "properties": {
+                        "code": {
+                          "type": "integer",
+                          "description": "Numeric error code (e.g., 101 invalid_access_key, 104 usage_limit_reached).",
+                          "example": 101
+                        },
+                        "type": {
+                          "type": "string",
+                          "description": "Machine-readable error type identifier.",
+                          "example": "invalid_access_key"
+                        },
+                        "info": {
+                          "type": "string",
+                          "description": "Human-readable description of the error and suggested action.",
+                          "example": "You have not supplied a valid API Access Key."
+                        }
+                      },
+                      "required": ["code"]
+                    }
+                  },
+                  "required": ["success", "error"]
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Server error.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "description": "Standard error payload for failed requests.",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "description": "Always `false` for error responses.",
+                      "example": false
+                    },
+                    "error": {
+                      "type": "object",
+                      "description": "Error details.",
+                      "properties": {
+                        "code": {
+                          "type": "integer",
+                          "description": "Numeric error code (e.g., 101 invalid_access_key, 104 usage_limit_reached).",
+                          "example": 101
+                        },
+                        "type": {
+                          "type": "string",
+                          "description": "Machine-readable error type identifier.",
+                          "example": "invalid_access_key"
+                        },
+                        "info": {
+                          "type": "string",
+                          "description": "Human-readable description of the error and suggested action.",
+                          "example": "You have not supplied a valid API Access Key."
+                        }
+                      },
+                      "required": ["code"]
+                    }
+                  },
+                  "required": ["success", "error"]
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/fluctuation": {
+      "get": {
+        "operationId": "getFluctuation",
+        "summary": "Fluctuation",
+        "description": "With the Fluctuation API endpoint, you can receive information about the currency’s fluctuation on a day-to-day basis. To be able to use this feature, add the `start_date` and `end_date` and select which currencies (symbols) you would like to receive info for from the API. Please note that the maximum allowed timeframe is 365 days.\n",
+        "parameters": [
+          {
+            "name": "access_key",
+            "in": "query",
+            "required": true,
+            "description": "Your API access key.",
+            "schema": { "type": "string", "minLength": 1 },
+            "example": "YOUR_ACCESS_KEY"
+          },
+          {
+            "name": "start_date",
+            "in": "query",
+            "required": true,
+            "description": "Start date (inclusive) in `YYYY-MM-DD`.",
+            "schema": { "type": "string", "format": "date" },
+            "example": "2024-05-01"
+          },
+          {
+            "name": "end_date",
+            "in": "query",
+            "required": true,
+            "description": "End date (inclusive) in `YYYY-MM-DD`.",
+            "schema": { "type": "string", "format": "date" },
+            "example": "2024-05-07"
+          },
+          {
+            "name": "base",
+            "in": "query",
+            "required": false,
+            "description": "Base currency (ISO 4217, e.g., `USD`). If omitted, the provider's default base (often `EUR`) is used. Changing base may be restricted on lower-tier plans.\n",
+            "schema": {
+              "type": "string",
+              "description": "ISO 4217 currency code (or metal code such as XAU/XAG).",
+              "pattern": "^[A-Z]{3}$",
+              "example": "USD"
+            },
+            "example": "USD"
+          },
+          {
+            "name": "symbols",
+            "in": "query",
+            "required": false,
+            "description": "Comma-separated list of target currency codes to filter the response (e.g., `USD,GBP,JPY`).\n",
+            "schema": { "type": "string", "pattern": "^[A-Za-z,]+$" },
+            "example": "USD,GBP,JPY"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Fluctuation metrics for currencies in the requested period.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "description": "Fluctuation metrics between two dates.",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "description": "Whether the request was successful."
+                    },
+                    "fluctuation": {
+                      "type": "boolean",
+                      "description": "Will be `true` for fluctuation requests."
+                    },
+                    "start_date": {
+                      "type": "string",
+                      "format": "date",
+                      "description": "Start date of the comparison period."
+                    },
+                    "end_date": {
+                      "type": "string",
+                      "format": "date",
+                      "description": "End date of the comparison period."
+                    },
+                    "base": {
+                      "type": "string",
+                      "description": "ISO 4217 currency code (or metal code such as XAU/XAG).",
+                      "pattern": "^[A-Z]{3}$",
+                      "example": "USD"
+                    },
+                    "rates": {
+                      "type": "object",
+                      "description": "Per-currency fluctuation metrics relative to `base` in the requested period.\n",
+                      "additionalProperties": {
+                        "type": "object",
+                        "properties": {
+                          "start_rate": {
+                            "type": "number",
+                            "description": "Rate on `start_date`."
+                          },
+                          "end_rate": {
+                            "type": "number",
+                            "description": "Rate on `end_date`."
+                          },
+                          "change": {
+                            "type": "number",
+                            "description": "Absolute change (end_rate − start_rate)."
+                          },
+                          "change_pct": {
+                            "type": "number",
+                            "description": "Percentage change (change / start_rate × 100)."
+                          }
+                        },
+                        "required": [
+                          "start_rate",
+                          "end_rate",
+                          "change",
+                          "change_pct"
+                        ]
+                      }
+                    }
+                  },
+                  "required": [
+                    "success",
+                    "fluctuation",
+                    "start_date",
+                    "end_date",
+                    "base",
+                    "rates"
+                  ]
+                },
+                "examples": {
+                  "default": {
+                    "value": {
+                      "success": true,
+                      "fluctuation": true,
+                      "start_date": "2024-05-01",
+                      "end_date": "2024-05-07",
+                      "base": "EUR",
+                      "rates": {
+                        "USD": {
+                          "start_rate": 1.0711,
+                          "end_rate": 1.0789,
+                          "change": 0.0078,
+                          "change_pct": 0.7282
+                        },
+                        "GBP": {
+                          "start_rate": 0.857,
+                          "end_rate": 0.851,
+                          "change": -0.006,
+                          "change_pct": -0.7006
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "description": "Standard error payload for failed requests.",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "description": "Always `false` for error responses.",
+                      "example": false
+                    },
+                    "error": {
+                      "type": "object",
+                      "description": "Error details.",
+                      "properties": {
+                        "code": {
+                          "type": "integer",
+                          "description": "Numeric error code (e.g., 101 invalid_access_key, 104 usage_limit_reached).",
+                          "example": 101
+                        },
+                        "type": {
+                          "type": "string",
+                          "description": "Machine-readable error type identifier.",
+                          "example": "invalid_access_key"
+                        },
+                        "info": {
+                          "type": "string",
+                          "description": "Human-readable description of the error and suggested action.",
+                          "example": "You have not supplied a valid API Access Key."
+                        }
+                      },
+                      "required": ["code"]
+                    }
+                  },
+                  "required": ["success", "error"]
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized — missing or invalid API key.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "description": "Standard error payload for failed requests.",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "description": "Always `false` for error responses.",
+                      "example": false
+                    },
+                    "error": {
+                      "type": "object",
+                      "description": "Error details.",
+                      "properties": {
+                        "code": {
+                          "type": "integer",
+                          "description": "Numeric error code (e.g., 101 invalid_access_key, 104 usage_limit_reached).",
+                          "example": 101
+                        },
+                        "type": {
+                          "type": "string",
+                          "description": "Machine-readable error type identifier.",
+                          "example": "invalid_access_key"
+                        },
+                        "info": {
+                          "type": "string",
+                          "description": "Human-readable description of the error and suggested action.",
+                          "example": "You have not supplied a valid API Access Key."
+                        }
+                      },
+                      "required": ["code"]
+                    }
+                  },
+                  "required": ["success", "error"]
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden — feature or base currency not allowed for current plan.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "description": "Standard error payload for failed requests.",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "description": "Always `false` for error responses.",
+                      "example": false
+                    },
+                    "error": {
+                      "type": "object",
+                      "description": "Error details.",
+                      "properties": {
+                        "code": {
+                          "type": "integer",
+                          "description": "Numeric error code (e.g., 101 invalid_access_key, 104 usage_limit_reached).",
+                          "example": 101
+                        },
+                        "type": {
+                          "type": "string",
+                          "description": "Machine-readable error type identifier.",
+                          "example": "invalid_access_key"
+                        },
+                        "info": {
+                          "type": "string",
+                          "description": "Human-readable description of the error and suggested action.",
+                          "example": "You have not supplied a valid API Access Key."
+                        }
+                      },
+                      "required": ["code"]
+                    }
+                  },
+                  "required": ["success", "error"]
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "description": "Standard error payload for failed requests.",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "description": "Always `false` for error responses.",
+                      "example": false
+                    },
+                    "error": {
+                      "type": "object",
+                      "description": "Error details.",
+                      "properties": {
+                        "code": {
+                          "type": "integer",
+                          "description": "Numeric error code (e.g., 101 invalid_access_key, 104 usage_limit_reached).",
+                          "example": 101
+                        },
+                        "type": {
+                          "type": "string",
+                          "description": "Machine-readable error type identifier.",
+                          "example": "invalid_access_key"
+                        },
+                        "info": {
+                          "type": "string",
+                          "description": "Human-readable description of the error and suggested action.",
+                          "example": "You have not supplied a valid API Access Key."
+                        }
+                      },
+                      "required": ["code"]
+                    }
+                  },
+                  "required": ["success", "error"]
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Too many requests — usage limit reached.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "description": "Standard error payload for failed requests.",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "description": "Always `false` for error responses.",
+                      "example": false
+                    },
+                    "error": {
+                      "type": "object",
+                      "description": "Error details.",
+                      "properties": {
+                        "code": {
+                          "type": "integer",
+                          "description": "Numeric error code (e.g., 101 invalid_access_key, 104 usage_limit_reached).",
+                          "example": 101
+                        },
+                        "type": {
+                          "type": "string",
+                          "description": "Machine-readable error type identifier.",
+                          "example": "invalid_access_key"
+                        },
+                        "info": {
+                          "type": "string",
+                          "description": "Human-readable description of the error and suggested action.",
+                          "example": "You have not supplied a valid API Access Key."
+                        }
+                      },
+                      "required": ["code"]
+                    }
+                  },
+                  "required": ["success", "error"]
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Server error.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "description": "Standard error payload for failed requests.",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "description": "Always `false` for error responses.",
+                      "example": false
+                    },
+                    "error": {
+                      "type": "object",
+                      "description": "Error details.",
+                      "properties": {
+                        "code": {
+                          "type": "integer",
+                          "description": "Numeric error code (e.g., 101 invalid_access_key, 104 usage_limit_reached).",
+                          "example": 101
+                        },
+                        "type": {
+                          "type": "string",
+                          "description": "Machine-readable error type identifier.",
+                          "example": "invalid_access_key"
+                        },
+                        "info": {
+                          "type": "string",
+                          "description": "Human-readable description of the error and suggested action.",
+                          "example": "You have not supplied a valid API Access Key."
+                        }
+                      },
+                      "required": ["code"]
+                    }
+                  },
+                  "required": ["success", "error"]
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "AccessKeyQuery": {
+        "type": "apiKey",
+        "in": "query",
+        "name": "access_key",
+        "description": "API access key as **query parameter**. Example: `?access_key=YOUR_KEY`. Required for all endpoints on `api.exchangeratesapi.io/v1`.\n"
+      }
+    },
+    "parameters": {
+      "AccessKey": {
+        "name": "access_key",
+        "in": "query",
+        "required": true,
+        "description": "Your API access key.",
+        "schema": { "type": "string", "minLength": 1 },
+        "example": "YOUR_ACCESS_KEY"
+      },
+      "Base": {
+        "name": "base",
+        "in": "query",
+        "required": false,
+        "description": "Base currency (ISO 4217, e.g., `USD`). If omitted, the provider's default base (often `EUR`) is used. Changing base may be restricted on lower-tier plans.\n",
+        "schema": {
+          "type": "string",
+          "description": "ISO 4217 currency code (or metal code such as XAU/XAG).",
+          "pattern": "^[A-Z]{3}$",
+          "example": "USD"
+        },
+        "example": "USD"
+      },
+      "Symbols": {
+        "name": "symbols",
+        "in": "query",
+        "required": false,
+        "description": "Comma-separated list of target currency codes to filter the response (e.g., `USD,GBP,JPY`).\n",
+        "schema": { "type": "string", "pattern": "^[A-Za-z,]+$" },
+        "example": "USD,GBP,JPY"
+      },
+      "From": {
+        "name": "from",
+        "in": "query",
+        "required": true,
+        "description": "Three-letter source currency code (ISO 4217).",
+        "schema": {
+          "type": "string",
+          "description": "ISO 4217 currency code (or metal code such as XAU/XAG).",
+          "pattern": "^[A-Z]{3}$",
+          "example": "USD"
+        },
+        "example": "USD"
+      },
+      "To": {
+        "name": "to",
+        "in": "query",
+        "required": true,
+        "description": "Three-letter target currency code (ISO 4217).",
+        "schema": {
+          "type": "string",
+          "description": "ISO 4217 currency code (or metal code such as XAU/XAG).",
+          "pattern": "^[A-Z]{3}$",
+          "example": "USD"
+        },
+        "example": "JPY"
+      },
+      "Amount": {
+        "name": "amount",
+        "in": "query",
+        "required": true,
+        "description": "Amount to convert (positive decimal).",
+        "schema": { "type": "number", "exclusiveMinimum": 0 },
+        "example": 125
+      },
+      "DatePath": {
+        "name": "date",
+        "in": "path",
+        "required": true,
+        "description": "Historical date in `YYYY-MM-DD` format.",
+        "schema": { "type": "string", "format": "date" },
+        "example": "2023-11-15"
+      },
+      "DateQuery": {
+        "name": "date",
+        "in": "query",
+        "required": false,
+        "description": "When provided on **/convert**, performs conversion using the specified historical date (`YYYY-MM-DD`).\n",
+        "schema": { "type": "string", "format": "date" },
+        "example": "2023-10-15"
+      },
+      "StartDate": {
+        "name": "start_date",
+        "in": "query",
+        "required": true,
+        "description": "Start date (inclusive) in `YYYY-MM-DD`.",
+        "schema": { "type": "string", "format": "date" },
+        "example": "2024-05-01"
+      },
+      "EndDate": {
+        "name": "end_date",
+        "in": "query",
+        "required": true,
+        "description": "End date (inclusive) in `YYYY-MM-DD`.",
+        "schema": { "type": "string", "format": "date" },
+        "example": "2024-05-07"
+      }
+    },
+    "schemas": {
+      "CurrencyCode": {
+        "type": "string",
+        "description": "ISO 4217 currency code (or metal code such as XAU/XAG).",
+        "pattern": "^[A-Z]{3}$",
+        "example": "USD"
+      },
+      "SymbolsResponse": {
+        "type": "object",
+        "description": "Supported currency symbols.",
+        "properties": {
+          "success": {
+            "type": "boolean",
+            "description": "Indicates whether the request was successful."
+          },
+          "symbols": {
+            "type": "object",
+            "description": "Map of currency codes to human-readable names.",
+            "additionalProperties": { "type": "string" }
+          }
+        },
+        "required": ["success", "symbols"]
+      },
+      "LatestRatesResponse": {
+        "type": "object",
+        "description": "Latest rates snapshot.",
+        "properties": {
+          "success": {
+            "type": "boolean",
+            "description": "Whether the request was successful."
+          },
+          "timestamp": {
+            "type": "integer",
+            "description": "UNIX time (seconds) for the rates snapshot."
+          },
+          "base": {
+            "type": "string",
+            "description": "ISO 4217 currency code (or metal code such as XAU/XAG).",
+            "pattern": "^[A-Z]{3}$",
+            "example": "USD"
+          },
+          "date": {
+            "type": "string",
+            "format": "date",
+            "description": "ISO date of the rates snapshot."
+          },
+          "rates": {
+            "type": "object",
+            "description": "Map of currency codes to their rate relative to `base`.",
+            "additionalProperties": { "type": "number" }
+          }
+        },
+        "required": ["success", "timestamp", "base", "date", "rates"]
+      },
+      "HistoricalRatesResponse": {
+        "type": "object",
+        "description": "Historical rates snapshot for a specific date.",
+        "properties": {
+          "success": {
+            "type": "boolean",
+            "description": "Whether the request was successful."
+          },
+          "historical": {
+            "type": "boolean",
+            "description": "Will be `true` for historical requests."
+          },
+          "date": {
+            "type": "string",
+            "format": "date",
+            "description": "Requested historical date."
+          },
+          "timestamp": {
+            "type": "integer",
+            "description": "UNIX time (seconds) for the rates snapshot."
+          },
+          "base": {
+            "type": "string",
+            "description": "ISO 4217 currency code (or metal code such as XAU/XAG).",
+            "pattern": "^[A-Z]{3}$",
+            "example": "USD"
+          },
+          "rates": {
+            "type": "object",
+            "description": "Map of currency codes to their rate relative to `base`.",
+            "additionalProperties": { "type": "number" }
+          }
+        },
+        "required": [
+          "success",
+          "historical",
+          "date",
+          "timestamp",
+          "base",
+          "rates"
+        ]
+      },
+      "ConvertResponse": {
+        "type": "object",
+        "description": "Currency conversion result and metadata.",
+        "properties": {
+          "success": {
+            "type": "boolean",
+            "description": "Whether the request was successful."
+          },
+          "query": {
+            "type": "object",
+            "description": "Original conversion query.",
+            "properties": {
+              "from": {
+                "type": "string",
+                "description": "ISO 4217 currency code (or metal code such as XAU/XAG).",
+                "pattern": "^[A-Z]{3}$",
+                "example": "USD"
+              },
+              "to": {
+                "type": "string",
+                "description": "ISO 4217 currency code (or metal code such as XAU/XAG).",
+                "pattern": "^[A-Z]{3}$",
+                "example": "USD"
+              },
+              "amount": {
+                "type": "number",
+                "description": "Amount requested to convert."
+              }
+            },
+            "required": ["from", "to", "amount"]
+          },
+          "info": {
+            "type": "object",
+            "description": "Rate information used for conversion.",
+            "properties": {
+              "timestamp": {
+                "type": "integer",
+                "description": "UNIX time (seconds) when the rate was last updated."
+              },
+              "rate": {
+                "type": "number",
+                "description": "Conversion rate from `from` to `to` at the time of conversion."
+              }
+            },
+            "required": ["timestamp", "rate"]
+          },
+          "historical": {
+            "type": "boolean",
+            "description": "Indicates if a historical date was used for conversion."
+          },
+          "date": {
+            "type": "string",
+            "format": "date",
+            "description": "Date associated with the applied rate (latest or historical)."
+          },
+          "result": {
+            "type": "number",
+            "description": "Calculated converted amount."
+          }
+        },
+        "required": ["success", "query", "info", "historical", "date", "result"]
+      },
+      "TimeSeriesResponse": {
+        "type": "object",
+        "description": "Daily exchange rates over a time window.",
+        "properties": {
+          "success": {
+            "type": "boolean",
+            "description": "Whether the request was successful."
+          },
+          "timeseries": {
+            "type": "boolean",
+            "description": "Will be `true` for time-series requests."
+          },
+          "start_date": {
+            "type": "string",
+            "format": "date",
+            "description": "Start date of the time window."
+          },
+          "end_date": {
+            "type": "string",
+            "format": "date",
+            "description": "End date of the time window."
+          },
+          "base": {
+            "type": "string",
+            "description": "ISO 4217 currency code (or metal code such as XAU/XAG).",
+            "pattern": "^[A-Z]{3}$",
+            "example": "USD"
+          },
+          "rates": {
+            "type": "object",
+            "description": "Map keyed by `YYYY-MM-DD`, each containing a currency-to-rate map relative to `base`.\n",
+            "additionalProperties": {
+              "type": "object",
+              "additionalProperties": { "type": "number" }
+            }
+          }
+        },
+        "required": [
+          "success",
+          "timeseries",
+          "start_date",
+          "end_date",
+          "base",
+          "rates"
+        ]
+      },
+      "FluctuationResponse": {
+        "type": "object",
+        "description": "Fluctuation metrics between two dates.",
+        "properties": {
+          "success": {
+            "type": "boolean",
+            "description": "Whether the request was successful."
+          },
+          "fluctuation": {
+            "type": "boolean",
+            "description": "Will be `true` for fluctuation requests."
+          },
+          "start_date": {
+            "type": "string",
+            "format": "date",
+            "description": "Start date of the comparison period."
+          },
+          "end_date": {
+            "type": "string",
+            "format": "date",
+            "description": "End date of the comparison period."
+          },
+          "base": {
+            "type": "string",
+            "description": "ISO 4217 currency code (or metal code such as XAU/XAG).",
+            "pattern": "^[A-Z]{3}$",
+            "example": "USD"
+          },
+          "rates": {
+            "type": "object",
+            "description": "Per-currency fluctuation metrics relative to `base` in the requested period.\n",
+            "additionalProperties": {
+              "type": "object",
+              "properties": {
+                "start_rate": {
+                  "type": "number",
+                  "description": "Rate on `start_date`."
+                },
+                "end_rate": {
+                  "type": "number",
+                  "description": "Rate on `end_date`."
+                },
+                "change": {
+                  "type": "number",
+                  "description": "Absolute change (end_rate − start_rate)."
+                },
+                "change_pct": {
+                  "type": "number",
+                  "description": "Percentage change (change / start_rate × 100)."
+                }
+              },
+              "required": ["start_rate", "end_rate", "change", "change_pct"]
+            }
+          }
+        },
+        "required": [
+          "success",
+          "fluctuation",
+          "start_date",
+          "end_date",
+          "base",
+          "rates"
+        ]
+      },
+      "ApiError": {
+        "type": "object",
+        "description": "Standard error payload for failed requests.",
+        "properties": {
+          "success": {
+            "type": "boolean",
+            "description": "Always `false` for error responses.",
+            "example": false
+          },
+          "error": {
+            "type": "object",
+            "description": "Error details.",
+            "properties": {
+              "code": {
+                "type": "integer",
+                "description": "Numeric error code (e.g., 101 invalid_access_key, 104 usage_limit_reached).",
+                "example": 101
+              },
+              "type": {
+                "type": "string",
+                "description": "Machine-readable error type identifier.",
+                "example": "invalid_access_key"
+              },
+              "info": {
+                "type": "string",
+                "description": "Human-readable description of the error and suggested action.",
+                "example": "You have not supplied a valid API Access Key."
+              }
+            },
+            "required": ["code"]
+          }
+        },
+        "required": ["success", "error"]
+      }
+    },
+    "responses": {
+      "Error400": {
+        "description": "Bad request.",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "description": "Standard error payload for failed requests.",
+              "properties": {
+                "success": {
+                  "type": "boolean",
+                  "description": "Always `false` for error responses.",
+                  "example": false
+                },
+                "error": {
+                  "type": "object",
+                  "description": "Error details.",
+                  "properties": {
+                    "code": {
+                      "type": "integer",
+                      "description": "Numeric error code (e.g., 101 invalid_access_key, 104 usage_limit_reached).",
+                      "example": 101
+                    },
+                    "type": {
+                      "type": "string",
+                      "description": "Machine-readable error type identifier.",
+                      "example": "invalid_access_key"
+                    },
+                    "info": {
+                      "type": "string",
+                      "description": "Human-readable description of the error and suggested action.",
+                      "example": "You have not supplied a valid API Access Key."
+                    }
+                  },
+                  "required": ["code"]
+                }
+              },
+              "required": ["success", "error"]
+            }
+          }
+        }
+      },
+      "Error401": {
+        "description": "Unauthorized — missing or invalid API key.",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "description": "Standard error payload for failed requests.",
+              "properties": {
+                "success": {
+                  "type": "boolean",
+                  "description": "Always `false` for error responses.",
+                  "example": false
+                },
+                "error": {
+                  "type": "object",
+                  "description": "Error details.",
+                  "properties": {
+                    "code": {
+                      "type": "integer",
+                      "description": "Numeric error code (e.g., 101 invalid_access_key, 104 usage_limit_reached).",
+                      "example": 101
+                    },
+                    "type": {
+                      "type": "string",
+                      "description": "Machine-readable error type identifier.",
+                      "example": "invalid_access_key"
+                    },
+                    "info": {
+                      "type": "string",
+                      "description": "Human-readable description of the error and suggested action.",
+                      "example": "You have not supplied a valid API Access Key."
+                    }
+                  },
+                  "required": ["code"]
+                }
+              },
+              "required": ["success", "error"]
+            }
+          }
+        }
+      },
+      "Error403": {
+        "description": "Forbidden — feature or base currency not allowed for current plan.",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "description": "Standard error payload for failed requests.",
+              "properties": {
+                "success": {
+                  "type": "boolean",
+                  "description": "Always `false` for error responses.",
+                  "example": false
+                },
+                "error": {
+                  "type": "object",
+                  "description": "Error details.",
+                  "properties": {
+                    "code": {
+                      "type": "integer",
+                      "description": "Numeric error code (e.g., 101 invalid_access_key, 104 usage_limit_reached).",
+                      "example": 101
+                    },
+                    "type": {
+                      "type": "string",
+                      "description": "Machine-readable error type identifier.",
+                      "example": "invalid_access_key"
+                    },
+                    "info": {
+                      "type": "string",
+                      "description": "Human-readable description of the error and suggested action.",
+                      "example": "You have not supplied a valid API Access Key."
+                    }
+                  },
+                  "required": ["code"]
+                }
+              },
+              "required": ["success", "error"]
+            }
+          }
+        }
+      },
+      "Error404": {
+        "description": "Not found.",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "description": "Standard error payload for failed requests.",
+              "properties": {
+                "success": {
+                  "type": "boolean",
+                  "description": "Always `false` for error responses.",
+                  "example": false
+                },
+                "error": {
+                  "type": "object",
+                  "description": "Error details.",
+                  "properties": {
+                    "code": {
+                      "type": "integer",
+                      "description": "Numeric error code (e.g., 101 invalid_access_key, 104 usage_limit_reached).",
+                      "example": 101
+                    },
+                    "type": {
+                      "type": "string",
+                      "description": "Machine-readable error type identifier.",
+                      "example": "invalid_access_key"
+                    },
+                    "info": {
+                      "type": "string",
+                      "description": "Human-readable description of the error and suggested action.",
+                      "example": "You have not supplied a valid API Access Key."
+                    }
+                  },
+                  "required": ["code"]
+                }
+              },
+              "required": ["success", "error"]
+            }
+          }
+        }
+      },
+      "Error429": {
+        "description": "Too many requests — usage limit reached.",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "description": "Standard error payload for failed requests.",
+              "properties": {
+                "success": {
+                  "type": "boolean",
+                  "description": "Always `false` for error responses.",
+                  "example": false
+                },
+                "error": {
+                  "type": "object",
+                  "description": "Error details.",
+                  "properties": {
+                    "code": {
+                      "type": "integer",
+                      "description": "Numeric error code (e.g., 101 invalid_access_key, 104 usage_limit_reached).",
+                      "example": 101
+                    },
+                    "type": {
+                      "type": "string",
+                      "description": "Machine-readable error type identifier.",
+                      "example": "invalid_access_key"
+                    },
+                    "info": {
+                      "type": "string",
+                      "description": "Human-readable description of the error and suggested action.",
+                      "example": "You have not supplied a valid API Access Key."
+                    }
+                  },
+                  "required": ["code"]
+                }
+              },
+              "required": ["success", "error"]
+            }
+          }
+        }
+      },
+      "Error5xx": {
+        "description": "Server error.",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "description": "Standard error payload for failed requests.",
+              "properties": {
+                "success": {
+                  "type": "boolean",
+                  "description": "Always `false` for error responses.",
+                  "example": false
+                },
+                "error": {
+                  "type": "object",
+                  "description": "Error details.",
+                  "properties": {
+                    "code": {
+                      "type": "integer",
+                      "description": "Numeric error code (e.g., 101 invalid_access_key, 104 usage_limit_reached).",
+                      "example": 101
+                    },
+                    "type": {
+                      "type": "string",
+                      "description": "Machine-readable error type identifier.",
+                      "example": "invalid_access_key"
+                    },
+                    "info": {
+                      "type": "string",
+                      "description": "Human-readable description of the error and suggested action.",
+                      "example": "You have not supplied a valid API Access Key."
+                    }
+                  },
+                  "required": ["code"]
+                }
+              },
+              "required": ["success", "error"]
+            }
+          }
+        }
+      }
+    }
+  }
+}

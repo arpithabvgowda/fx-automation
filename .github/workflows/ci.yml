@@ -38,7 +38,7 @@ jobs:
         run: npm run test:coverage
         env:
           # This maps the GitHub Secret to an environment variable the code can see
-          ACCESS_KEY: ${{ secrets.ACCESS_KEY }}
+          ACCESS_KEY: ${{ secrets.API_KEY }}
           BASE_URL: https://api.exchangeratesapi.io/v1/
 
       # 6. Upload Playwright HTML report (v6 is the 2026 standard)

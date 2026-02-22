@@ -1,7 +1,7 @@
 import { test } from "./fx.api.fixtures";
 import { expect } from "@playwright/test";
-import { schemaValidator } from "../../src/api/validators/schemaValidator";
-import { FxErrorResponse, SymbolsResponse } from "../../src/api/types/fx.types";
+import { validateSymbolsResponse } from "./helpers/validateResponse";
+import { SymbolsResponse } from "../../src/api/types/fx.types";
 
 test.describe("Get FX Symbols API", () => {
   //positive
@@ -12,6 +12,7 @@ test.describe("Get FX Symbols API", () => {
     const responseBody = body as SymbolsResponse;
     expect(responseBody.success).toBeTruthy();
     expect(responseBody.symbols).toHaveProperty("INR");
+    validateSymbolsResponse(body); //Schema validation
   });
 
   //negative

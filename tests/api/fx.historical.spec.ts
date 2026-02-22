@@ -1,6 +1,6 @@
 import { test } from "./fx.api.fixtures";
 import { expect } from "@playwright/test";
-import { schemaValidator } from "../../src/api/validators/schemaValidator";
+import { validateHistoricalRatesResponse } from "./helpers/validateResponse";
 import {
   FxErrorResponse,
   HistoricalRatesResponse,
@@ -11,7 +11,7 @@ test.describe("Get historical FX rates API", () => {
   test("Fetch historical rate", async ({ client }) => {
     const { body, status, ok } = await client.getHistorical(
       "2023-01-01",
-      "EUR"
+      "EUR",
     );
     expect(status).toEqual(200);
 
@@ -20,13 +20,14 @@ test.describe("Get historical FX rates API", () => {
     expect(responseBody.base).toBe("EUR");
     expect(responseBody.rates.USD).toBeDefined();
     expect(responseBody.rates.GBP).toBeDefined();
+    validateHistoricalRatesResponse(body); //Schema validation
   });
 
   //Negative
   test("Should fail for future date", async ({ client }) => {
     const { body, status, ok } = await client.getHistorical(
       "2035-01-01",
-      "EUR"
+      "EUR",
     );
     const responseBody = body as FxErrorResponse;
     expect(ok).toBe(false);

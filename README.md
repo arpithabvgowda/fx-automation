@@ -1,7 +1,6 @@
 # FX Automation Framework
 
-[![CI](https://img.shields.io/github/workflow/status/arpithabvgowda/fx-automation/FX%20Automation%20CI?style=flat-square)](https://github.com/arpithabvgowda/fx-automation/actions)  
-[![Coverage](https://img.shields.io/badge/coverage-HTML%20report-green?style=flat-square)](./coverage/index.html)  
+[![CI](https://img.shields.io/github/workflow/status/arpithabvgowda/fx-automation/FX%20Automation%20CI?style=flat-square)](https://github.com/arpithabvgowda/fx-automation/actions)    
 
 ---
 
@@ -178,3 +177,4 @@ if (status === 429 && attempt < maxRetries) {
 ### Author
 
 Arpitha B V – Senior SDET / Automation Engineer
+

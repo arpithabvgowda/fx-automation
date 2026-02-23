@@ -7,42 +7,56 @@ import {
   HistoricalRatesResponse,
 } from "../../../src/api/types/fx.types";
 
+/**
+ * Generic schema validation wrapper.
+ *
+ * If the response contains an `error` field,
+ * validate against ApiError schema.
+ *
+ * Otherwise, validate against the provided success schema.
+ */
+const validateResponse = (successSchema: string, body: unknown) => {
+  const isError = (body as FxErrorResponse)?.error;
+
+  if (isError) {
+    schemaValidator.validate("ApiError", body);
+  } else {
+    schemaValidator.validate(successSchema, body);
+  }
+};
+
+/**
+ * Latest Rates Response Validator
+ */
 export const validateLatestResponse = (
   body: LatestRatesResponse | FxErrorResponse,
 ) => {
-  if ((body as FxErrorResponse).error) {
-    schemaValidator.validate("ApiError", body);
-  } else {
-    schemaValidator.validate("LatestRatesResponse", body);
-  }
+  validateResponse("LatestRatesResponse", body);
 };
 
+/**
+ * Historical Rates Response Validator
+ */
 export const validateHistoricalRatesResponse = (
   body: HistoricalRatesResponse | FxErrorResponse,
 ) => {
-  if ((body as FxErrorResponse).error) {
-    schemaValidator.validate("ApiError", body);
-  } else {
-    schemaValidator.validate("HistoricalRatesResponse", body);
-  }
+  validateResponse("HistoricalRatesResponse", body);
 };
 
+/**
+ * Convert Response Validator
+ */
 export const validateConvertResponse = (
   body: ConvertResponse | FxErrorResponse,
 ) => {
-  if ((body as FxErrorResponse).error) {
-    schemaValidator.validate("ApiError", body);
-  } else {
-    schemaValidator.validate("ConvertResponse", body);
-  }
+  validateResponse("ConvertResponse", body);
 };
 
+/**
+ * Symbols Response Validator
+ */
 export const validateSymbolsResponse = (
   body: SymbolsResponse | FxErrorResponse,
 ) => {
-  if ((body as FxErrorResponse).error) {
-    schemaValidator.validate("ApiError", body);
-  } else {
-    schemaValidator.validate("SymbolsResponse", body);
-  }
+  validateResponse("SymbolsResponse", body);
 };

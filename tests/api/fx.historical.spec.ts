@@ -6,8 +6,10 @@ import {
   HistoricalRatesResponse,
 } from "../../src/api/types/fx.types";
 
-test.describe("Get historical FX rates API", () => {
-  //Postive
+test.describe("Fetch historical FX rates API", () => {
+  // -----------------------------
+  // Positive test: Fetch historical rates for a valid past date
+  // -----------------------------
   test("Fetch historical rate", async ({ client }) => {
     const { body, status, ok } = await client.getHistorical(
       "2023-01-01",
@@ -23,7 +25,9 @@ test.describe("Get historical FX rates API", () => {
     validateHistoricalRatesResponse(body); //Schema validation
   });
 
-  //Negative
+  // -----------------------------
+  // Negative test: Handle invalid input (future date)
+  // -----------------------------
   test("Should fail for future date", async ({ client }) => {
     const { body, status, ok } = await client.getHistorical(
       "2035-01-01",

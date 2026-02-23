@@ -7,8 +7,25 @@ import {
 } from "../../src/api/types/fx.types";
 import { http, HttpResponse } from "msw";
 
+/**
+ * Test suite for Latest FX Rates endpoint.
+ *
+ * Covers:
+ * - Happy path validation
+ * - Input validation failures
+ * - Edge cases (large symbol set)
+ * - Resilience behaviour (429 retry logic)
+ * - Contract validation against OpenAPI schema
+ */
 test.describe("Latest FX Rates API", () => {
-  // Positive test
+  /**
+   * Positive test:
+   * Valid base currency with multiple symbols.
+   * Verifies:
+   * - HTTP success
+   * - Business fields correctness
+   * - Contract compliance
+   */
   test("should return latest rates for EUR", async ({ client }) => {
     const { body, status, ok } = await client.getLatestRates("EUR", [
       "USD",
@@ -25,14 +42,22 @@ test.describe("Latest FX Rates API", () => {
     validateLatestResponse(body); //Schema validation
   });
 
-  // Negative test
+  /**
+   * Negative test:
+   * Invalid base currency should return 400.
+   * Ensures API input validation is enforced.
+   */
   test("should fail for invalid base currency", async ({ client }) => {
     const { body, status, ok } = await client.getLatestRates("XYZ");
     expect(status).toEqual(400);
     expect(ok).toBe(false);
   });
 
-  // Negative test
+  /**
+   * Negative test:
+   * Invalid symbol parameter.
+   * Verifies structured error response format.
+   */
   test("should fail for invalid symbol", async ({ client }) => {
     const { body, status, ok } = await client.getLatestRates("EUR", ["XYZ"]);
     expect(status).toEqual(400);
@@ -41,7 +66,11 @@ test.describe("Latest FX Rates API", () => {
     expect(responseBody.error.message).toContain("invalid Currency");
   });
 
-  // Edge test
+  /**
+   * Edge case:
+   * Large symbol set in single request.
+   * Ensures response scales correctly and returns all requested rates.
+   */
   test("should handle many symbols", async ({ client }) => {
     const symbols = ["USD", "GBP", "INR", "JPY", "AUD", "CAD", "CHF", "NZD"];
     const { body, status, ok } = await client.getLatestRates("EUR", symbols);
@@ -56,6 +85,18 @@ test.describe("Latest FX Rates API", () => {
     validateLatestResponse(body); //Schema validation
   });
 
+  /**
+   * Resilience Test:
+   * Simulates rate limiting (HTTP 429) using MSW.
+   *
+   * Behaviour verified:
+   * - First call returns 429
+   * - Client waits based on Retry-After header
+   * - Second call succeeds
+   * - Retry count is confirmed
+   *
+   * This validates exponential backoff + retry strategy in BaseClient.
+   */
   test("should retry on 429 and eventually succeed", async ({
     client,
     msw,
@@ -94,7 +135,6 @@ test.describe("Latest FX Rates API", () => {
     );
 
     try {
-      // Call API (Ensure your client actually implements retry logic!)
       const { status, ok, body } = await client.getLatestRates("EUR", [
         "USD",
         "GBP",
@@ -107,7 +147,7 @@ test.describe("Latest FX Rates API", () => {
       expect(responseBody.rates.USD).toBe(1.1);
       expect(callCount).toBe(2); // Confirms the retry actually happened
     } finally {
-      // 2. Shut it down immediately so other tests use the real network
+      // Shut it down immediately so other tests use the real network
       msw.resetHandlers();
       msw.close();
     }

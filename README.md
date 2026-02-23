@@ -67,7 +67,7 @@ open coverage/index.html
 
 ### GitHub Actions Workflow
 
-- `.github/workflows/ci.yml` automatically runs on push and pull request to main
+- `.github/workflows/ci.yml` automatically runs on push and pull requests to main
 - Installs Node, dependencies, and Playwright browsers
 - Runs tests with MSW mocks and collects coverage
 - Uploads Playwright HTML report and coverage report
@@ -136,7 +136,6 @@ open coverage/index.html
 - `src/api/client/` → FX API client
 - `src/api/validators/` → Schema validation
 - `tests/api/` → API test specs
-- `tests/fixtures/` → Playwright fixtures with FX client injection
 - `tests/mocks/` → MSW mocks for API responses
 
 ### Retry Logic & Rate Limits
@@ -167,7 +166,7 @@ if (status === 429 && attempt < maxRetries) {
 
 ### Recommended Workflow
 
-- Pull latest `main` branch
+- Pull the latest `main` branch
 - Install dependencies: `npm ci`
 - Run API tests with MSW: `npm run test:api`
 - Run coverage: `npm run test:coverage`
@@ -176,5 +175,6 @@ if (status === 429 && attempt < maxRetries) {
 
 ### Author
 
-Arpitha B V – Senior SDET / Automation Engineer
+Arpitha B V – SDET Automation Engineer
+
 

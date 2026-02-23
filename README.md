@@ -1,6 +1,6 @@
 # FX Automation Framework
 
-[![CI](https://img.shields.io/github/workflow/status/arpithabvgowda/fx-automation/FX%20Automation%20CI?style=flat-square)](https://github.com/arpithabvgowda/fx-automation/actions)    
+[![FX Automation CI](https://github.com/arpithabvgowda/fx-automation/actions/workflows/ci.yml/badge.svg)](https://github.com/arpithabvgowda/fx-automation/actions/workflows/ci.yml)
 
 ---
 
@@ -176,5 +176,6 @@ if (status === 429 && attempt < maxRetries) {
 ### Author
 
 Arpitha B V – SDET Automation Engineer
+
 
 

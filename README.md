@@ -1,6 +1,6 @@
 # FX Automation Framework
 
-[![CI](https://img.shields.io/github/workflow/status/arpithabvgowda/fx-automation/FX%20Automation%20CI?style=flat-square)](https://github.com/arpithabvgowda/fx-automation/actions)    
+[![CI](https://img.shields.io/github/workflow/status/arpithabvgowda/fx-automation/FX%20Automation%20CI?style=flat-square)](https://github.com/arpithabvgowda/fx-automation/actions)
 
 ---
 
@@ -8,12 +8,12 @@
 
 FX Automation is a **scalable API testing framework** built with **Playwright** and **TypeScript**, designed to test **foreign exchange APIs** with focus on:
 
-- **Contract validation** using schemas (`Ajv`)  
-- **Reliable API handling**, including **429 rate limit retries** with exponential backoff  
-- **Mocking** APIs using **MSW** for deterministic tests  
-- **Code coverage tracking** with **C8**  
-- **CI/CD integration** with **GitHub Actions**  
-- **Structured logging** for easy debugging and traceability  
+- **Contract validation** using schemas (`Ajv`)
+- **Reliable API handling**, including **429 rate limit retries** with exponential backoff
+- **Mocking** APIs using **MSW** for deterministic tests
+- **Code coverage tracking** with **C8**
+- **CI/CD integration** with **GitHub Actions**
+- **Structured logging** for easy debugging and traceability
 
 It follows **SDET best practices**, ensuring maintainable, readable, and testable code.
 
@@ -24,9 +24,9 @@ It follows **SDET best practices**, ensuring maintainable, readable, and testabl
 ### API Client
 
 - Methods for endpoints: `/latest`, `/convert`, `/symbols`, `{date}` - Historic FX rates
-- Handles query parameters (`access_key`, `symbols`, etc.)  
-- Returns typed responses: `FxBaseResponse`, `LatestRatesResponse`, `ConvertResponse`  
-- Automatic retries for 429 errors, with exponential backoff  
+- Handles query parameters (`access_key`, `symbols`, etc.)
+- Returns typed responses: `FxBaseResponse`, `LatestRatesResponse`, `ConvertResponse`
+- Automatic retries for 429 errors, with exponential backoff
 
 ```ts
 const { body, status, ok } = await client.getLatestRates("EUR", ["USD", "GBP"]);
@@ -39,8 +39,8 @@ const { body, status, ok } = await client.getLatestRates("EUR", ["USD", "GBP"]);
 - Throws informative errors when validation fails
 
 ```ts
-import { schemaValidator } from './src/api/validators/schemaValidator';
-schemaValidator.validate('LatestRatesResponse', response.body);
+import { schemaValidator } from "./src/api/validators/schemaValidator";
+schemaValidator.validate("LatestRatesResponse", response.body);
 ```
 
 ### Mocking with MSW
@@ -115,17 +115,21 @@ BASE_URL=https://api.exchangeratesapi.io/
 ```
 
 ### 4. Run Tests Locally
+
 #### Run all tests
+
 ```bash
 npm test
 ```
 
 #### Run API tests only
+
 ```bash
 npm run test:api
 ```
 
 #### Run tests with coverage
+
 ```bash
 npm run test:coverage
 open coverage/index.html
@@ -146,7 +150,7 @@ open coverage/index.html
 ```ts
 if (status === 429 && attempt < maxRetries) {
   const delay = retryAfter ? retryAfter * 1000 : baseDelay * 2 ** attempt;
-  await new Promise(res => setTimeout(res, delay));
+  await new Promise((res) => setTimeout(res, delay));
   attempt++;
   continue;
 }
@@ -173,8 +177,8 @@ if (status === 429 && attempt < maxRetries) {
 - Inspect reports: `open coverage/index.html`
 - Push changes → GitHub Actions runs CI automatically
 
+![alt text](image.png)
+
 ### Author
 
 Arpitha B V – SDET Automation Engineer
-
-
